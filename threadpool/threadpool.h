@@ -1,18 +1,17 @@
 #pragma once
+#include <mutex>
 class Task;
 class ThreadPool
 {
 public:
-	ThreadPool & getThreadPool();
+	ThreadPool();
+	~ThreadPool();
 
 	Task* getTask();
 	void exec();
 	void addTask(Task*);
 
 private:
-	ThreadPool();
-	~ThreadPool();
-
 	std::queue<Task* > m_TaskQueue;
 	std::vector<std::thread> m_Threads;
 	std::mutex m_Mutex;

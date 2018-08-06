@@ -1,5 +1,4 @@
-﻿  stdafx.cpp
-  task.cpp
-  threadpool.cpp
-  正在生成代码...
+﻿  threadpool.cpp
+g:\project\threadpool\threadpool\threadpool.cpp(35): warning C4477: “printf”: 格式字符串“%d”需要类型“int”的参数，但可变参数 1 拥有了类型“std::thread::id”
+g:\project\threadpool\threadpool\threadpool.cpp(41): warning C4477: “printf”: 格式字符串“%d”需要类型“int”的参数，但可变参数 1 拥有了类型“std::thread::id (__cdecl *)(void) noexcept”
   threadpool.vcxproj -> G:\project\threadpool\Debug\threadpool.exe
