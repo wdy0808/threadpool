@@ -14,6 +14,6 @@ testtask::~testtask()
 
 void testtask::run()
 {
-	printf("%d running!\n", m_TestNum);
+	printf("%d running! %d\n", m_TestNum, std::this_thread::get_id());
 	Sleep(10000);
 }
