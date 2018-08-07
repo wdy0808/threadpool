@@ -30,6 +30,12 @@
     <ClInclude Include="testtask.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="taskqueue.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="threadsworker.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -41,8 +47,14 @@
     <ClCompile Include="task.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="taskqueue.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
     <ClCompile Include="testtask.cpp">
-      <Filter>头文件</Filter>
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="threadsworker.cpp">
+      <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
