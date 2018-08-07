@@ -10,12 +10,15 @@ public:
 
 	void work();
 	Task* getWork();
+
+	void stop();
+	void terminate();
 	
 private:
 	int m_ThreadNum;
 	int m_WorkingNum, m_WaitingNum;
+	bool m_State;
 	ThreadPool* m_Pool;
-	std::vector<std::thread> m_Threads;
-	std::vector<int> m_State;  //0:waiting 1:working
+	std::thread* m_Threads;
 };
 

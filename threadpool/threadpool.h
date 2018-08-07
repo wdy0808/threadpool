@@ -1,5 +1,8 @@
 #pragma once
 #include <mutex>
+
+enum ThreadPoolState {normal, stop};
+
 class Task;
 class TaskQueue;
 class ThreadsWorker;
@@ -13,8 +16,14 @@ public:
 	Task* getTask();
 	bool addTask(Task* task, bool ifblock);
 
+	void stop();
+	void shutdown();
+
+	bool getState();
+
 private:
 	TaskQueue * m_TaskQueue;
 	ThreadsWorker * m_Threads;
+	ThreadPoolState m_State;
 };
 
