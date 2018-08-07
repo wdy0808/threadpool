@@ -1,7 +1,7 @@
 #pragma once
 #include <mutex>
 
-enum ThreadPoolState {normal, stop};
+enum ThreadPoolState {normal, stop, stop_now};
 
 class Task;
 class TaskQueue;
@@ -19,7 +19,7 @@ public:
 	void stop();
 	void shutdown();
 
-	bool getState();
+	ThreadPoolState getState();
 
 private:
 	TaskQueue * m_TaskQueue;

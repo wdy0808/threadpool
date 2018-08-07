@@ -14,23 +14,17 @@ ThreadsWorker::ThreadsWorker(ThreadPool* pool)
 }
 
 ThreadsWorker::ThreadsWorker(int num, ThreadPool* pool)
-	: m_ThreadNum(num), m_WorkingNum(0), m_WaitingNum(0), m_Pool(pool), m_State(true)
+	: m_ThreadNum(num), m_WorkingNum(0), m_WaitingNum(0), m_Pool(pool)
 {
-	m_Threads = new std::thread[m_ThreadNum];
 	for (int i = 0; i < m_ThreadNum; i++)
 	{
-		m_Threads[i] = std::thread(threadMain, this);
+		m_Threads.push_back(std::thread(threadMain, this));
 		m_Threads[i].detach();
 	}
 }
 
 ThreadsWorker::~ThreadsWorker()
 {
-	if (m_Threads != nullptr)
-	{
-		delete[] m_Threads;
-		m_Threads = nullptr;
-	}
 }
 
 Task* ThreadsWorker::getWork()
@@ -40,22 +34,12 @@ Task* ThreadsWorker::getWork()
 
 void ThreadsWorker::work()
 {
-	while (m_State)
+	while (m_Pool->getState() != stop_now)
 	{
 		Task* todo = getWork();
 		if (todo == nullptr)
 			break;
 		todo->run();
+		delete todo;
 	}
-}
-
-void ThreadsWorker::stop()
-{
-	m_State = false;
-}
-
-void ThreadsWorker::terminate()
-{
-	delete[] m_Threads;
-	m_Threads = nullptr;
 }
