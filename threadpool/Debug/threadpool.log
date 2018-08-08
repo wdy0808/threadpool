@@ -1,2 +1,10 @@
-﻿  threadpool.cpp
+﻿  stdafx.cpp
+  poolcondition.cpp
+  task.cpp
+  taskqueue.cpp
+  testtask.cpp
+g:\project\threadpool\threadpool\testtask.cpp(17): warning C4477: “printf”: 格式字符串“%d”需要类型“int”的参数，但可变参数 2 拥有了类型“std::thread::id”
+  threadpool.cpp
+  threadsworker.cpp
+  正在生成代码...
   threadpool.vcxproj -> G:\project\threadpool\Debug\threadpool.exe
