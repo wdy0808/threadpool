@@ -1,12 +1,12 @@
 #pragma once
 #include <mutex>
 class Task;
-class ThreadPool;
+class PoolCondition;
 class TaskQueue
 {
 public:
-	TaskQueue(ThreadPool* pool);
-	TaskQueue(int, ThreadPool*);
+	TaskQueue(PoolCondition* pool);
+	TaskQueue(int, PoolCondition*);
 	~TaskQueue();
 
 	bool empty();
@@ -18,9 +18,12 @@ public:
 
 	void stopQueueWork();
 
+	void notifyThreads();
+
 private:
 	int m_TaskNum;
-	ThreadPool* m_Pool;
+	bool stop;
+	PoolCondition* m_Pool;
 	std::queue<Task*> m_TaskQueue;
 	std::condition_variable m_QueueNotEmpty;
 	std::condition_variable m_QueueNotFull;

@@ -1,20 +1,22 @@
 #pragma once
 class Task;
-class ThreadPool;
+class PoolCondition;
 class ThreadsWorker
 {
 public:
-	ThreadsWorker(ThreadPool* pool);
-	ThreadsWorker(int, ThreadPool*);
+	ThreadsWorker(PoolCondition* pool);
 	~ThreadsWorker();
 
 	void work();
 	Task* getWork();
+
+	int addThreads(int);
+
+	std::thread::id getThreadId(int);
 	
 private:
-	int m_ThreadNum;
-	int m_WorkingNum, m_WaitingNum;
-	ThreadPool* m_Pool;
+	PoolCondition* m_Pool;
 	std::vector<std::thread> m_Threads;
+	std::vector<std::thread::id> m_ThreadId;
 };
 

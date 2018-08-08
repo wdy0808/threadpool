@@ -1,16 +1,14 @@
 #pragma once
-#include <mutex>
-
-enum ThreadPoolState {normal, stop, stop_now};
-
 class Task;
-class TaskQueue;
-class ThreadsWorker;
+class PoolCondition;
+enum ThreadIncreaseWay;
+enum ThreadPoolState;
 class ThreadPool
 {
 public:
+	ThreadPool(ThreadIncreaseWay way, int start, int maxthread, int maxtask, int addnum, bool decrease, double rate);
+	ThreadPool(int threadnum, int starthread, int tasknum = 100);
 	ThreadPool();
-	ThreadPool(int threadnum, int tasknum = 100);
 	~ThreadPool();
 
 	Task* getTask();
@@ -19,11 +17,12 @@ public:
 	void stop();
 	void shutdown();
 
-	ThreadPoolState getState();
+	int getWorkedThreadsNum();
+
+	void setIncreaseMode(ThreadIncreaseWay way, int num);
+	void setDecreaseMode(bool);
 
 private:
-	TaskQueue * m_TaskQueue;
-	ThreadsWorker * m_Threads;
-	ThreadPoolState m_State;
+	PoolCondition* m_Controller;
 };
 

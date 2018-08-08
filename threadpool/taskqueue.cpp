@@ -1,15 +1,15 @@
 #include "stdafx.h"
 #include "taskqueue.h"
 #include "task.h"
-#include "threadpool.h"
+#include "poolcondition.h"
 
-TaskQueue::TaskQueue(ThreadPool* pool)
-	: m_TaskNum(100), m_Pool(pool)
+TaskQueue::TaskQueue(PoolCondition* pool)
+	: m_TaskNum(100), m_Pool(pool), stop(false)
 {
 }
 
-TaskQueue::TaskQueue(int num, ThreadPool* pool)
-	: m_TaskNum(num), m_Pool(pool)
+TaskQueue::TaskQueue(int num, PoolCondition* pool)
+	: m_TaskNum(num), m_Pool(pool), stop(false)
 {
 }
 
@@ -20,10 +20,12 @@ TaskQueue::~TaskQueue()
 bool TaskQueue::addTask(Task* task)
 {
 	std::lock_guard<std::mutex> lock(m_Mtx);
-	if (full() || m_Pool->getState() != normal)
+	if (full() || stop)
 		return false;
 	m_TaskQueue.push(task);
 	m_QueueNotEmpty.notify_one();
+	if (m_TaskQueue.size() > m_Pool->getWorkedThreadsNum())
+		m_Pool->activiteMoreThread(false);
 	return true;
 }
 
@@ -32,10 +34,12 @@ void TaskQueue::addTask_Block(Task* task)
 	std::unique_lock<std::mutex> lock(m_Mtx);
 	while (full())
 		m_QueueNotFull.wait(lock);
-	if (m_Pool->getState() != normal)
+	if (stop)
 		return;
 	m_TaskQueue.push(task);
 	m_QueueNotEmpty.notify_one();
+	if (m_TaskQueue.size() > m_Pool->getWorkedThreadsNum())
+		m_Pool->activiteMoreThread(false);
 }
 
 bool TaskQueue::empty()
@@ -51,9 +55,9 @@ bool TaskQueue::full()
 Task* TaskQueue::getTask()
 {
 	std::unique_lock<std::mutex> lock(m_Mtx);
-	while (empty() && m_Pool->getState() == normal)
+	while (empty() && !stop && (m_Pool->getState() == pausing || m_Pool->getThreadState(std::this_thread::get_id())))
 		m_QueueNotEmpty.wait(lock);
-	if (m_Pool->getState() == stop_now || empty())
+	if (m_Pool->getState() == stop_now || empty() || !m_Pool->getThreadState(std::this_thread::get_id()))
 		return nullptr;
 	Task* task = m_TaskQueue.front();
 	m_TaskQueue.pop();
@@ -64,11 +68,21 @@ Task* TaskQueue::getTask()
 void TaskQueue::stopQueueWork()
 {
 	std::unique_lock<std::mutex> lock(m_Mtx);
+	stop = true;
 	if (m_Pool->getState() == stop_now)
 	{
 		while (!m_TaskQueue.empty())
+		{
+			Task* tem = m_TaskQueue.front();
 			m_TaskQueue.pop();
+			delete tem;
+		}
 	}
 	m_QueueNotEmpty.notify_all();
 	m_QueueNotFull.notify_all();
+}
+
+void TaskQueue::notifyThreads()
+{
+	m_QueueNotEmpty.notify_all();
 }
