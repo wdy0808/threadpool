@@ -27,8 +27,7 @@ bool ThreadsWorker::readyToWork(Task* task)
 	try {
 		return dtask->prepare();
 	}catch (std::exception& e) {
-		printf("[exception caught: %s]\n有任务依赖任务未表明是否被依赖任务可执行!任务放弃执行\n",
-			e.what());
+		printf("[exception caught: %s]\n有任务依赖任务未表明是否被依赖任务可执行!任务放弃执行\n", e.what());
 		return false;
 	}
 }

@@ -1,8 +1,7 @@
 #pragma once
+#include "config.h"
 class Task;
 class PoolCondition;
-enum ThreadIncreaseWay;
-enum ThreadPoolState;
 class ThreadPool
 {
 public:
@@ -19,7 +18,7 @@ public:
 
 	int getWorkedThreadsNum();
 
-	void setIncreaseMode(ThreadIncreaseWay way, int num);
+	void setIncreaseMode(ThreadIncreaseWay way, int num = 0);
 
 	bool cancelTask(Task*);
 

@@ -27,9 +27,6 @@
     <ClInclude Include="threadpool.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="testtask.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="taskqueue.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -37,6 +34,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="poolcondition.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="dependenttask.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="config.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -53,13 +56,13 @@
     <ClCompile Include="taskqueue.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="testtask.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="threadsworker.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="poolcondition.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="dependenttask.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,2 +1,12 @@
-﻿  threadpool.cpp
-  threadpool.vcxproj -> G:\project\threadpool\Debug\threadpool.exe
+﻿  poolcondition.cpp
+g:\project\threadpool\threadpool\poolcondition.cpp(83): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
+  taskqueue.cpp
+g:\project\threadpool\threadpool\taskqueue.cpp(32): warning C4018: “>”: 有符号/无符号不匹配
+g:\project\threadpool\threadpool\taskqueue.cpp(46): warning C4018: “>”: 有符号/无符号不匹配
+  threadpool.cpp
+g:\project\threadpool\threadpool\threadpool.cpp(11): warning C4244: “参数”: 从“double”转换到“int”，可能丢失数据
+  threadsworker.cpp
+g:\project\threadpool\threadpool\threadsworker.cpp(52): warning C4018: “<”: 有符号/无符号不匹配
+g:\project\threadpool\threadpool\threadsworker.cpp(64): warning C4018: “<”: 有符号/无符号不匹配
+  正在生成代码...
+  threadpool.vcxproj -> G:\project\threadpool\Debug\threadpool.lib

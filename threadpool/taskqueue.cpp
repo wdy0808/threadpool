@@ -109,4 +109,5 @@ bool TaskQueue::cancelTask(Task* task)
 		return false;
 	delete task;
 	task = new CancelTask();
+	return true;
 }

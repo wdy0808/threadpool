@@ -1,5 +1,6 @@
 #pragma once
 #include "task.h"
+#include <future>
 class DependentTask :
 	public Task
 {
