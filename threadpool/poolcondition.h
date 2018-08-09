@@ -20,7 +20,7 @@ public:
 	void setDecreaseMode(bool);
 
 	Task* getTask();
-	bool addTask(Task*, bool);
+	int addTask(Task*, bool);
 
 	bool getThreadState(std::thread::id);
 	void setThreadState(std::thread::id, bool);
@@ -32,6 +32,7 @@ public:
 	void shutdown();
 
 	bool activeAll();
+	bool activeOne();
 
 private:
 	std::map<std::thread::id, bool> m_ThreadCondition;

@@ -12,7 +12,7 @@ public:
 	~ThreadPool();
 
 	Task* getTask();
-	bool addTask(Task* task, bool ifblock);
+	int addTask(Task* task, bool ifblock);
 
 	void stop();
 	void shutdown();

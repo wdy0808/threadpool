@@ -1,7 +1,12 @@
 #pragma once
 #include <mutex>
+
 class Task;
 class PoolCondition;
+struct cmp{
+	bool operator() (Task*, Task*);
+};
+
 class TaskQueue
 {
 public:
@@ -13,8 +18,8 @@ public:
 	bool full();
 
 	Task* getTask();
-	bool addTask(Task*);
-	void addTask_Block(Task*);
+	int addTask(Task*);
+	int addTask_Block(Task*);
 
 	void stopQueueWork();
 
@@ -24,7 +29,7 @@ private:
 	int m_TaskNum;
 	bool stop;
 	PoolCondition* m_Pool;
-	std::queue<Task*> m_TaskQueue;
+	std::priority_queue<Task*, std::vector<Task*>, cmp> m_TaskQueue;
 	std::condition_variable m_QueueNotEmpty;
 	std::condition_variable m_QueueNotFull;
 	std::mutex m_Mtx;

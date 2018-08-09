@@ -47,7 +47,7 @@ void PoolCondition::activiteMoreThread(bool initialize)
 void PoolCondition::releaseThread()
 {
 	setState(pausing);
-	if (m_Decrease)
+	if (m_Decrease && !activeOne())
 	{
 		int num = m_WorkedNum - m_WorkedNum*m_DecreaseRate;
 		for (int i=0; i<m_MaxThreadNum && num>0; i++)
@@ -91,7 +91,7 @@ Task* PoolCondition::getTask()
 	return m_Task->getTask();
 }
 
-bool PoolCondition::addTask(Task* task, bool ifblock)
+int PoolCondition::addTask(Task* task, bool ifblock)
 {
 	if (m_State == ThreadPoolState::stop || m_State == stop_now)
 		return false;
@@ -147,4 +147,9 @@ void PoolCondition::shutdown()
 bool PoolCondition::activeAll()
 {
 	return m_WorkedNum == m_MaxThreadNum;
+}
+
+bool PoolCondition::activeOne()
+{
+	return m_WorkedNum == 1;
 }

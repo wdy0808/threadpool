@@ -3,6 +3,13 @@
 #include "task.h"
 #include "poolcondition.h"
 
+bool cmp::operator() (Task* a, Task* b)
+{
+	if (a->getPriority() != b->getPriority())
+		return a->getPriority() < b->getPriority();
+	return a->getId() > b->getId();
+}
+
 TaskQueue::TaskQueue(PoolCondition* pool)
 	: m_TaskNum(100), m_Pool(pool), stop(false)
 {
@@ -17,29 +24,30 @@ TaskQueue::~TaskQueue()
 {
 }
 
-bool TaskQueue::addTask(Task* task)
+int TaskQueue::addTask(Task* task)
 {
 	std::lock_guard<std::mutex> lock(m_Mtx);
 	if (full() || stop)
-		return false;
+		return 0;
 	m_TaskQueue.push(task);
 	m_QueueNotEmpty.notify_one();
 	if (m_TaskQueue.size() > m_Pool->getWorkedThreadsNum())
 		m_Pool->activiteMoreThread(false);
-	return true;
+	return task->getId();
 }
 
-void TaskQueue::addTask_Block(Task* task)
+int TaskQueue::addTask_Block(Task* task)
 {
 	std::unique_lock<std::mutex> lock(m_Mtx);
 	while (full())
 		m_QueueNotFull.wait(lock);
 	if (stop)
-		return;
+		return 0;
 	m_TaskQueue.push(task);
 	m_QueueNotEmpty.notify_one();
 	if (m_TaskQueue.size() > m_Pool->getWorkedThreadsNum())
 		m_Pool->activiteMoreThread(false);
+	return task->getId();
 }
 
 bool TaskQueue::empty()
@@ -59,7 +67,7 @@ Task* TaskQueue::getTask()
 		m_QueueNotEmpty.wait(lock);
 	if (m_Pool->getState() == stop_now || empty() || !m_Pool->getThreadState(std::this_thread::get_id()))
 		return nullptr;
-	Task* task = m_TaskQueue.front();
+	Task* task = m_TaskQueue.top();
 	m_TaskQueue.pop();
 	m_QueueNotFull.notify_one();
 	return task;
@@ -73,7 +81,7 @@ void TaskQueue::stopQueueWork()
 	{
 		while (!m_TaskQueue.empty())
 		{
-			Task* tem = m_TaskQueue.front();
+			Task* tem = m_TaskQueue.top();
 			m_TaskQueue.pop();
 			delete tem;
 		}
