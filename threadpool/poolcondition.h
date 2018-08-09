@@ -7,26 +7,23 @@ class Task;
 class PoolCondition
 {
 public:
-	PoolCondition(ThreadIncreaseWay way, int start, int max, int maxtask, int add, bool d, double minus);
+	PoolCondition(ThreadIncreaseWay way, int start, int max, int maxtask, int add);
 	~PoolCondition();
 
 	void activiteMoreThread(bool initialize);
-	void releaseThread();
 
 	int getWorkedThreadsNum();
 	int getMaxThreadNum();
 
-	void setIncreaseMode(ThreadIncreaseWay way, int num);
-	void setDecreaseMode(bool);
+	void setIncreaseMode(ThreadIncreaseWay way, int num = 0);
 
 	Task* getTask();
-	int addTask(Task*, bool);
+	bool addTask(Task*, bool);
 
 	bool getThreadState(std::thread::id);
 	void setThreadState(std::thread::id, bool);
 
 	ThreadPoolState getState();
-	void setState(ThreadPoolState);
 
 	void stop();
 	void shutdown();
@@ -34,12 +31,12 @@ public:
 	bool activeAll();
 	bool activeOne();
 
+	bool cancelTask(Task*);
+
 private:
 	std::map<std::thread::id, bool> m_ThreadCondition;
 	int m_StartNum, m_IncreaseNum, m_WorkedNum, m_MaxThreadNum;
 	ThreadIncreaseWay m_Way;
-	std::atomic<bool> m_Decrease;
-	double m_DecreaseRate;
 	TaskQueue* m_Task;
 	ThreadsWorker* m_Thread;
 	ThreadPoolState m_State;

@@ -2,13 +2,12 @@
 #include "poolcondition.h"
 #include "taskqueue.h"
 #include "threadsworker.h"
-#include <cmath>
 
 
-PoolCondition::PoolCondition(ThreadIncreaseWay way, int start, int max, int maxtask, int add, bool d, double minus)
+PoolCondition::PoolCondition(ThreadIncreaseWay way, int start, int max, int maxtask, int add)
 	: m_Way(way), m_StartNum(start), m_MaxThreadNum(max),
-	m_IncreaseNum(add), m_DecreaseRate(minus), m_Task(new TaskQueue(maxtask, this)), 
-	m_Thread(new ThreadsWorker(this)), m_WorkedNum(0), m_State(normal), m_Decrease(d)
+	m_IncreaseNum(add), m_Task(new TaskQueue(maxtask, this)), 
+	m_Thread(new ThreadsWorker(this)), m_WorkedNum(0), m_State(normal)
 {
 	activiteMoreThread(true);
 }
@@ -30,7 +29,7 @@ PoolCondition::~PoolCondition()
 
 void PoolCondition::activiteMoreThread(bool initialize)
 {
-	setState(pausing);
+	m_State = pausing;
 	if (initialize)
 		m_WorkedNum += m_Thread->addThreads(m_StartNum);
 	else
@@ -41,28 +40,7 @@ void PoolCondition::activiteMoreThread(bool initialize)
 		if (m_Way == increase_index)
 			m_IncreaseNum *= 2;
 	}
-	setState(normal);
-}
-
-void PoolCondition::releaseThread()
-{
-	setState(pausing);
-	if (m_Decrease && !activeOne())
-	{
-		int num = m_WorkedNum - m_WorkedNum*m_DecreaseRate;
-		for (int i=0; i<m_MaxThreadNum && num>0; i++)
-		{
-			if (m_ThreadCondition[m_Thread->getThreadId(i)])
-			{
-				m_ThreadCondition[m_Thread->getThreadId(i)] = false;
-				num--;
-			}
-		}
-		m_Task->notifyThreads();
-		m_WorkedNum = m_WorkedNum*m_DecreaseRate;
-		m_IncreaseNum = pow(m_MaxThreadNum, 0.25);
-	}
-	setState(normal);
+	m_State = normal;
 }
 
 int PoolCondition::getWorkedThreadsNum()
@@ -81,17 +59,12 @@ void PoolCondition::setIncreaseMode(ThreadIncreaseWay way, int num)
 	m_IncreaseNum = num;
 } 
 
-void PoolCondition::setDecreaseMode(bool mode)
-{
-	m_Decrease = mode;
-}
-
 Task* PoolCondition::getTask()
 {
 	return m_Task->getTask();
 }
 
-int PoolCondition::addTask(Task* task, bool ifblock)
+bool PoolCondition::addTask(Task* task, bool ifblock)
 {
 	if (m_State == ThreadPoolState::stop || m_State == stop_now)
 		return false;
@@ -104,6 +77,11 @@ int PoolCondition::addTask(Task* task, bool ifblock)
 
 void PoolCondition::setThreadState(std::thread::id id, bool state)
 {
+	if (m_ThreadCondition[id] && !state)
+	{
+		m_WorkedNum--;
+		m_IncreaseNum = pow(m_MaxThreadNum, 0.25);
+	}
 	m_ThreadCondition[id] = state;
 }
 
@@ -115,11 +93,6 @@ bool PoolCondition::getThreadState(std::thread::id id)
 ThreadPoolState PoolCondition::getState()
 {
 	return m_State;
-}
-
-void PoolCondition::setState(ThreadPoolState state)
-{
-	m_State = state;
 }
 
 void PoolCondition::stop()
@@ -152,4 +125,9 @@ bool PoolCondition::activeAll()
 bool PoolCondition::activeOne()
 {
 	return m_WorkedNum == 1;
+}
+
+bool PoolCondition::cancelTask(Task* task)
+{
+	return m_Task->cancelTask(task);
 }

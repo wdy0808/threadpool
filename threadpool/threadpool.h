@@ -6,13 +6,13 @@ enum ThreadPoolState;
 class ThreadPool
 {
 public:
-	ThreadPool(ThreadIncreaseWay way, int start, int maxthread, int maxtask, int addnum, bool decrease, double rate);
+	ThreadPool(ThreadIncreaseWay way, int start, int maxthread, int maxtask, int addnum = 0);
 	ThreadPool(int threadnum, int starthread, int tasknum = 100);
 	ThreadPool();
 	~ThreadPool();
 
 	Task* getTask();
-	int addTask(Task* task, bool ifblock);
+	bool addTask(Task* task, bool ifblock);
 
 	void stop();
 	void shutdown();
@@ -20,7 +20,8 @@ public:
 	int getWorkedThreadsNum();
 
 	void setIncreaseMode(ThreadIncreaseWay way, int num);
-	void setDecreaseMode(bool);
+
+	bool cancelTask(Task*);
 
 private:
 	PoolCondition* m_Controller;

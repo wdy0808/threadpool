@@ -9,10 +9,13 @@ public:
 
 	void setPriority(int);
 	int getPriority();
-	int getId();
 
 private:
-	int m_Id, m_Priority;
-	static int m_CurrentId;
+	int m_Priority;
 };
 
+class CancelTask : public Task
+{
+public:
+	void run();
+};

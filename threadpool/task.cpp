@@ -1,10 +1,9 @@
 #include "stdafx.h"
 #include "task.h"
 
-int Task::m_CurrentId = 1;
 
 Task::Task()
-	: m_Id(m_CurrentId++), m_Priority(0)
+	: m_Priority(0)
 {
 }
 
@@ -23,7 +22,6 @@ int Task::getPriority()
     return m_Priority;
 }
 
-int Task::getId()
+void CancelTask::run()
 {
-    return m_Id;
 }

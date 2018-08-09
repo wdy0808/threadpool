@@ -1,7 +1,7 @@
 #pragma once
-#include "task.h"
+#include "dependenttask.h"
 class testtask :
-	public Task
+	public DependentTask
 {
 public:
 	testtask(int);

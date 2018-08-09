@@ -7,6 +7,7 @@ public:
 	ThreadsWorker(PoolCondition* pool);
 	~ThreadsWorker();
 
+	bool readyToWork(Task*);
 	void work();
 	Task* getWork();
 
