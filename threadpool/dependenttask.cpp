@@ -14,7 +14,7 @@ DependentTask::~DependentTask()
 
 void DependentTask::run()
 {
-	ready(true);
+	ready(false);
 }
 
 bool DependentTask::prepare()
