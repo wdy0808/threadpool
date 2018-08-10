@@ -19,22 +19,18 @@ public:
 	Task* getTask();
 	bool addTask(Task*, bool);
 
-	bool getThreadState(std::thread::id);
-	void setThreadState(std::thread::id, bool);
+	void release();
 
 	ThreadPoolState getState();
 
 	void stop();
 	void shutdown();
 
-	bool activeAll();
-	bool activeOne();
-
 	bool cancelTask(Task*);
 
 private:
-	std::map<std::thread::id, bool> m_ThreadCondition;
-	int m_StartNum, m_IncreaseNum, m_WorkedNum, m_MaxThreadNum;
+	int m_StartNum, m_IncreaseNum, m_MaxThreadNum;
+	std::atomic<int> m_WorkedNum;
 	ThreadIncreaseWay m_Way;
 	TaskQueue* m_Task;
 	ThreadsWorker* m_Thread;

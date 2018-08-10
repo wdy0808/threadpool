@@ -29,18 +29,16 @@ PoolCondition::~PoolCondition()
 
 void PoolCondition::activiteMoreThread(bool initialize)
 {
-	m_State = pausing;
 	if (initialize)
 		m_WorkedNum += m_Thread->addThreads(m_StartNum);
 	else
 	{
-		if (m_Way == once_all || activeAll())
+		if (m_WorkedNum == m_MaxThreadNum)
 			return;
 		m_WorkedNum += m_Thread->addThreads(m_IncreaseNum);
 		if (m_Way == increase_index)
 			m_IncreaseNum *= 2;
 	}
-	m_State = normal;
 }
 
 int PoolCondition::getWorkedThreadsNum()
@@ -66,7 +64,7 @@ Task* PoolCondition::getTask()
 
 bool PoolCondition::addTask(Task* task, bool ifblock)
 {
-	if (m_State == ThreadPoolState::stop || m_State == stop_now)
+	if (m_State == ThreadPoolState::stop || m_State == stop_now || task == nullptr)
 		return false;
 	if (ifblock)
 		m_Task->addTask_Block(task);
@@ -75,19 +73,11 @@ bool PoolCondition::addTask(Task* task, bool ifblock)
 	return true;
 }
 
-void PoolCondition::setThreadState(std::thread::id id, bool state)
+void PoolCondition::release()
 {
-	if (m_ThreadCondition[id] && !state)
-	{
-		m_WorkedNum--;
-		m_IncreaseNum = pow(m_MaxThreadNum, 0.25);
-	}
-	m_ThreadCondition[id] = state;
-}
-
-bool PoolCondition::getThreadState(std::thread::id id)
-{
-	return m_ThreadCondition[id];
+	m_WorkedNum--;
+	if (m_Way == increase_index)
+		m_IncreaseNum = 1;
 }
 
 ThreadPoolState PoolCondition::getState()
@@ -109,22 +99,8 @@ void PoolCondition::shutdown()
 	if (m_State == normal)
 	{
 		m_State = ThreadPoolState::stop_now;
-		for (int i=0; i<m_MaxThreadNum; i++)
-		{
-			m_ThreadCondition[m_Thread->getThreadId(i)] = false;
-		}
 		m_Task->stopQueueWork();
 	}
-}
-
-bool PoolCondition::activeAll()
-{
-	return m_WorkedNum == m_MaxThreadNum;
-}
-
-bool PoolCondition::activeOne()
-{
-	return m_WorkedNum == 1;
 }
 
 bool PoolCondition::cancelTask(Task* task)

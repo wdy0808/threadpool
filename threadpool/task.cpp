@@ -3,7 +3,7 @@
 
 
 Task::Task()
-	: m_Priority(0)
+	: m_Priority(10)
 {
 }
 

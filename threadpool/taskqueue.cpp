@@ -61,15 +61,15 @@ Task* TaskQueue::getTask()
 {
 	std::unique_lock<std::mutex> lock(m_Mtx);
 	clock_t begin_wait = clock();
-	while (empty() && !stop && (m_Pool->getState() == pausing || m_Pool->getThreadState(std::this_thread::get_id())))
+	while (empty() && !stop)
 	{
 		m_QueueNotEmpty.wait_for(lock, std::chrono::seconds(120));
 		clock_t end_wait = clock();
 		double wait_time = static_cast<double>(end_wait - begin_wait) / CLOCKS_PER_SEC;
 		if (wait_time >= 120)
-			m_Pool->setThreadState(std::this_thread::get_id(), false);
+			break;
 	}
-	if (m_Pool->getState() == stop_now || empty() || !m_Pool->getThreadState(std::this_thread::get_id()))
+	if (m_Pool->getState() == stop_now || empty())
 		return nullptr;
 	Task* task = m_TaskQueue.top();
 	m_TaskRunState[task] = true;
